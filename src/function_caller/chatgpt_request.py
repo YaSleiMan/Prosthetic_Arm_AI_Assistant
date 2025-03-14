@@ -6,12 +6,16 @@ import os
 
 # Get API key from the environment variables
 current_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(current_dir, "../../config/.env")
-load_dotenv(env_path)
+config_path = os.path.join(current_dir, "../../config/.env")
+load_dotenv(os.path.join(config_path, ".env"))
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+# Load Starting Prompt
+with open(os.path.join(config_path, "starter_prompt"), "r") as file:
+    starter_prompt = file.read().strip()
+
 # Global variable to store the conversation history
-conversation = [{"role": "system", "content": "You are a robotic assistant that decomposes tasks into function calls."}]
+conversation = [{"role": "system", "content": starter_prompt}]
 
 def send_to_chatgpt(prompt):
     # Add the user input to the conversation
