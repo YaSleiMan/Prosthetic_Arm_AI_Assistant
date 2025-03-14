@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(BME1530_project)
+project(Prosthetic_Arm_AI_Assistant)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
