@@ -1,0 +1,10 @@
+<launch>
+    <!-- Prompt input node -->
+    <node pkg="BME1530_project" type="prompt_node.py" name="prompt_node" output="screen" />
+
+    <!-- ChatGPT request node -->
+    <node pkg="BME1530_project" type="chatgpt_request.py" name="chatgpt_request_node" output="screen" />
+
+    <!-- Function call extractor node -->
+    <node pkg="BME1530_project" type="extract_function_calls.py" name="function_call_extractor_node" output="screen" />
+</launch>

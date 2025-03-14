@@ -1,0 +1,8 @@
+rospy
+opencv-python
+torch
+numpy
+openai
+cv_bridge
+franka_ros
+
