@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 import rospy
 from std_msgs.msg import String
 from dotenv import load_dotenv
@@ -6,7 +6,9 @@ import os
 
 # Get API key from the environment variables
 load_dotenv("/home/yasser/catkin_ws/src/Prosthetic_Arm_AI_Assistant/config/.env")
-openai.api_key = os.getenv("OPENAI_API_KEY")
+api_key=os.getenv("OPENAI_API_KEY")
+# print(api_key)
+client = OpenAI(api_key=api_key)
 
 # Load Starting Prompt
 with open("/home/yasser/catkin_ws/src/Prosthetic_Arm_AI_Assistant/config/starter_prompt.txt", "r") as file:
@@ -18,17 +20,14 @@ conversation = [{"role": "system", "content": starter_prompt}]
 def send_to_chatgpt(prompt):
     # Add the user input to the conversation
     conversation.append({"role": "user", "content": prompt})
-    
+
     # Send the entire conversation to ChatGPT
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=conversation
-    )
-    
+    response = client.chat.completions.create(model="gpt-4",messages=conversation)
+
     # Get the response and add it to the conversation
     response_text = response.choices[0].message.content
     conversation.append({"role": "assistant", "content": response_text})
-    
+
     return response_text
 
 def callback(data):
