@@ -5,13 +5,11 @@ from dotenv import load_dotenv
 import os
 
 # Get API key from the environment variables
-current_dir = os.path.dirname(os.path.abspath(__file__))
-config_path = os.path.join(current_dir, "../../config/.env")
-load_dotenv(os.path.join(config_path, ".env"))
+load_dotenv("/home/yasser/catkin_ws/src/Prosthetic_Arm_AI_Assistant/config/.env")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Load Starting Prompt
-with open(os.path.join(config_path, "starter_prompt"), "r") as file:
+with open("/home/yasser/catkin_ws/src/Prosthetic_Arm_AI_Assistant/config/starter_prompt.txt", "r") as file:
     starter_prompt = file.read().strip()
 
 # Global variable to store the conversation history
@@ -28,7 +26,7 @@ def send_to_chatgpt(prompt):
     )
     
     # Get the response and add it to the conversation
-    response_text = response['choices'][0]['message']['content']
+    response_text = response.choices[0].message.content
     conversation.append({"role": "assistant", "content": response_text})
     
     return response_text
