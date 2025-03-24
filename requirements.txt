@@ -4,5 +4,4 @@ torch
 numpy
 openai
 cv_bridge
-franka_ros
 python-dotenv

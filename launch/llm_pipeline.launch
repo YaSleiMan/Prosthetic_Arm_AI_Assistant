@@ -1,12 +1,13 @@
 <launch>
-    <arg name="venv" value="/home/yasser/catkin_ws/src/Prosthetic_Arm_AI_Assistant/.venv/bin/python3" />
+    <!--<arg name="venv" value="/home/yasser/catkin_ws/src/Prosthetic_Arm_AI_Assistant/.venv/bin/python3" />-->
+    <!-- launch-prefix = "$(arg venv)" -->
 
     <!-- Prompt input node -->
-    <node pkg="Prosthetic_Arm_AI_Assistant" type="prompt_node.py" name="prompt_node" launch-prefix = "$(arg venv)" output="screen" />
+    <node pkg="Prosthetic_Arm_AI_Assistant" type="prompt_node.py" name="prompt_node" output="screen" />
 
     <!-- ChatGPT request node -->
-    <node pkg="Prosthetic_Arm_AI_Assistant" type="chatgpt_request.py" name="chatgpt_request_node" launch-prefix = "$(arg venv)" output="screen" />
+    <node pkg="Prosthetic_Arm_AI_Assistant" type="chatgpt_request.py" name="chatgpt_request_node" output="screen" />
 
     <!-- Function call extractor node -->
-    <node pkg="Prosthetic_Arm_AI_Assistant" type="extract_function_calls.py" name="function_call_extractor_node" launch-prefix = "$(arg venv)" output="screen" />
+    <node pkg="Prosthetic_Arm_AI_Assistant" type="extract_function_calls.py" name="function_call_extractor_node" output="screen" />
 </launch>

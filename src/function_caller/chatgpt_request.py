@@ -4,14 +4,17 @@ from std_msgs.msg import String
 from dotenv import load_dotenv
 import os
 
+# Get Directory
+directory = "/home/yasleiman/catkin_ws/src/Prosthetic_Arm_AI_Assistant"
+
 # Get API key from the environment variables
-load_dotenv("/home/yasser/catkin_ws/src/Prosthetic_Arm_AI_Assistant/config/.env")
+load_dotenv(directory+"/config/.env")
 api_key=os.getenv("OPENAI_API_KEY")
 # print(api_key)
 client = OpenAI(api_key=api_key)
 
 # Load Starting Prompt
-with open("/home/yasser/catkin_ws/src/Prosthetic_Arm_AI_Assistant/config/starter_prompt.txt", "r") as file:
+with open(directory+"/config/starter_prompt.txt", "r") as file:
     starter_prompt = file.read().strip()
 
 # Global variable to store the conversation history
@@ -22,7 +25,7 @@ def send_to_chatgpt(prompt):
     conversation.append({"role": "user", "content": prompt})
 
     # Send the entire conversation to ChatGPT
-    response = client.chat.completions.create(model="gpt-4",messages=conversation)
+    response = client.chat.completions.create(model="gpt-3.5-turbo",messages=conversation)
 
     # Get the response and add it to the conversation
     response_text = response.choices[0].message.content
