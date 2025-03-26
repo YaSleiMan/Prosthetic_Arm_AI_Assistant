@@ -1,22 +1,34 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import rospy
+import rclpy
+from rclpy.node import Node
 from std_msgs.msg import String
 
-def prompt_publisher():
-    rospy.init_node("prompt_node")
-    pub = rospy.Publisher("/prompt_input", String, queue_size=10)
+class PromptNode(Node):
+    def __init__(self):
+        super().__init__("prompt_node")
+        self.publisher = self.create_publisher(String, "/prompt_input", 10)
+        self.get_logger().info("Prompt node started. Type your command:")
+        self.run_prompt_loop()
 
-    rospy.loginfo("Prompt node started. Type your command:")
-    while not rospy.is_shutdown():
-        prompt = input(">> ")
-        if prompt.lower() == "exit":
-            break
-        pub.publish(prompt)
-        rospy.loginfo(f"Published prompt: {prompt}")
+    def run_prompt_loop(self):
+        try:
+            while rclpy.ok():
+                prompt = input(">> ")
+                if prompt.lower() == "exit":
+                    break
+                msg = String()
+                msg.data = prompt
+                self.publisher.publish(msg)
+                self.get_logger().info(f"Published prompt: {prompt}")
+        except KeyboardInterrupt:
+            self.get_logger().info("Prompt node interrupted by user.")
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = PromptNode()
+    node.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == "__main__":
-    try:
-        prompt_publisher()
-    except rospy.ROSInterruptException:
-        pass
+    main()
