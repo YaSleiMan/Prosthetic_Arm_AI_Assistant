@@ -29,7 +29,12 @@ class ObjectLocalizationNode(Node):
         self.target_object = None
 
         self.panda = rtb.models.Panda()
-        self.tool_offset = SE3(0.0, 0.0, 0.145)
+        self.tool_offset = SE3(np.array([
+            [-0.00271136, -0.99979483,  0.02007335,  0.05374745],
+            [ 0.99996372, -0.00254864,  0.00812753, -0.04031328],
+            [-0.0080747,   0.02009466,  0.99976547, -0.03746503],
+            [ 0.0,         0.0,         0.0,         1.0]
+        ]))
         self.fsi = FrankaStateInterface()
 
         self.timer = self.create_timer(0.1, self.process_image)

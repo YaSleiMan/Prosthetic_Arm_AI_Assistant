@@ -5,8 +5,9 @@ import roboticstoolbox as rtb
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+from interfaces import FrankaStateInterface
+import threading
 
-from interfaces import FrankaStateInterface  # Assumes this is available from your lab's codebase
 
 def get_object_coordinates(node, timeout_sec=5):
     """
@@ -51,7 +52,7 @@ class FrankaMotionCommander:
         # Allow interface to warm up
         time.sleep(2)
 
-    def move_to_pose(self, position=None, rpy=(0, 0, 0), mode="absolute", steps=50, sleep_time=0.01):
+    def move_to_pose(self, position=None, rpy=(0, 0, 0), mode="absolute", steps=500, sleep_time=0.01):
         """
         Moves the robot end effector to the desired pose.
 
@@ -63,6 +64,7 @@ class FrankaMotionCommander:
         - sleep_time: Delay between steps in seconds
         """
         current_joint_positions = np.array(self.fsi.joint_positions)
+        print(current_joint_positions)
         current_pose = self.panda.fkine(current_joint_positions) * self.tool_offset
 
         if mode == "absolute":
@@ -90,6 +92,7 @@ class FrankaMotionCommander:
             pose_flange = pose * self.back_prop
             sol = self.panda.ikine_LM(pose_flange, q0=current_joint_positions)
             if sol.success:
+                # print(sol.q.tolist())
                 self.fsi.publish_joints(sol.q.tolist())
                 current_joint_positions = sol.q
                 time.sleep(sleep_time)
@@ -103,8 +106,13 @@ class FrankaMotionCommander:
 if __name__ == '__main__':
     commander = FrankaMotionCommander()
 
+    spin_func = lambda _ : rclpy.spin(commander.node)
+    spin_thread = threading.Thread(target=spin_func, args=(0,))
+    spin_thread.start()
+    time.sleep(2) # sleep to allow spin thread to get some messages
+
     # Example absolute move
-    commander.move_to_pose(position=(0.5, 0.0, 0.4), rpy=(0, 3.14, 0), mode="absolute")
+    commander.move_to_pose(position=(-0.5, 0.0, -0.4), rpy=(0, 3.14, 0), mode="absolute")
 
     # Example relative move
     # commander.move_to_pose(position=(0.05, 0, 0), rpy=(0, 0, 0), mode="relative")
