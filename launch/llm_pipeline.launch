@@ -3,11 +3,19 @@
     <!-- launch-prefix = "$(arg venv)" -->
 
     <!-- Prompt input node -->
-    <node pkg="Prosthetic_Arm_AI_Assistant" type="prompt_node.py" name="prompt_node" output="screen" />
+    <node name="prompt_node" pkg="Prosthetic_Arm_AI_Assistant" type="prompt_node.py" output="screen" />
 
     <!-- ChatGPT request node -->
-    <node pkg="Prosthetic_Arm_AI_Assistant" type="chatgpt_request.py" name="chatgpt_request_node" output="screen" />
+    <node name="chatgpt_request_node" pkg="Prosthetic_Arm_AI_Assistant" type="chatgpt_request.py" output="screen" />
 
     <!-- Function call extractor node -->
-    <node pkg="Prosthetic_Arm_AI_Assistant" type="extract_function_calls.py" name="function_call_extractor_node" output="screen" />
+    <node name="function_call_extractor_node" pkg="Prosthetic_Arm_AI_Assistant" type="extract_function_calls.py" output="screen" />
+
+    <!-- Computer vision node (YOLO + depth + TF transform) -->
+    <node name="object_localization_node" pkg="Prosthetic_Arm_AI_Assistant" type="object_localization.py" output="screen" />
+
+    <!-- Function dispatcher: parses and executes function calls -->
+    <node name="function_dispatcher" pkg="Prosthetic_Arm_AI_Assistant" type="function_dispatcher.py" output="screen" />
+
+    <!-- Optional: Add your gripper controller node here when ready -->
 </launch>
