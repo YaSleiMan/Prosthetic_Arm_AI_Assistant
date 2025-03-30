@@ -25,8 +25,17 @@ The robot supports these functions:
 
 5. set_gripper(state: str)
    - Opens or closes the gripper.
-   - Accepts \"open\" or \"close\".
-   - Example: set_gripper(\"close\")
+   - Accepts "open" or "close".
+   - Example: set_gripper("close")
+
+---
+
+## Additional Info
+
+- The robot's default return position is:
+  move_to_pose(position=(0.3, 0.0, 0.55), rpy=(3.14, 3.14, 0), mode="absolute")
+
+- Use this to return the robot to a safe resting position after tasks.
 
 ---
 
@@ -35,7 +44,7 @@ The robot supports these functions:
 - Only return Python function calls using the above functions.
 - Do not return text or explanations.
 - Return the calls in a single Python code block (surrounded by triple backticks).
-- Use `move_to_pose(..., mode=\"object\")` after `find_object(...)` if the goal is to move to an object.
+- Use `move_to_pose(..., mode="object")` after `find_object(...)` if the goal is to move to an object.
 
 ---
 
@@ -44,13 +53,10 @@ The robot supports these functions:
 Task: Pick up the cup
 
 Output:
-find_object("cup") 
-move_to_pose(rpy=(0, 3.14, 0), mode="object") 
+```
+find_object("cup")
+move_to_pose(rpy=(0, 3.14, 0), mode="object")
 set_gripper("close")
-
----
-
-### Guidance
-- Use `find_object()` first before calling any object-related move.
-- Always use proper Python syntax.
-- Do not include explanations, comments, or text outside the code block.
+move_to_pose(position=(0.3, 0.0, 0.55), rpy=(3.14, 3.14, 0), mode="absolute")
+set_gripper("open")
+```

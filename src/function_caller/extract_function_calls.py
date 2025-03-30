@@ -5,10 +5,29 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 
-def extract_function_calls(response):
-    pattern = r"(\w+\(.*?\))"
-    matches = re.findall(pattern, response)
-    return matches
+def extract_function_calls(text):
+    """
+    Parses a string and extracts all top-level function calls with properly matched parentheses.
+    """
+    calls = []
+    depth = 0
+    start_idx = None
+
+    for i, char in enumerate(text):
+        if char == '(':
+            if depth == 0:
+                # Start of a function call: match the function name before the (
+                match = re.search(r'\b\w+\($', text[:i+1])
+                if match:
+                    start_idx = match.start()
+            depth += 1
+        elif char == ')':
+            depth -= 1
+            if depth == 0 and start_idx is not None:
+                calls.append(text[start_idx:i+1])
+                start_idx = None
+
+    return calls
 
 class FunctionCallExtractor(Node):
     def __init__(self):
@@ -23,7 +42,7 @@ class FunctionCallExtractor(Node):
         self.get_logger().info("Function Call Extractor Node started.")
 
     def callback(self, msg):
-        self.get_logger().info(f"Received response: {msg.data}")
+        self.get_logger().info(f"Received response:\n{msg.data}")
         function_calls = extract_function_calls(msg.data)
         output = "\n".join(function_calls)
         self.get_logger().info(f"Extracted function calls:\n{output}")

@@ -19,8 +19,8 @@ class ObjectLocalizationNode(Node):
     def __init__(self):
         super().__init__('object_localization_node')
 
-        self.image_sub = self.create_subscription(Image, '/camera/image_raw', self.image_callback, 10)
-        self.depth_sub = self.create_subscription(Image, '/camera/depth', self.depth_callback, 10)
+        self.image_sub = self.create_subscription(Image, '/camera/camera/color/image_raw', self.image_callback, 10)
+        self.depth_sub = self.create_subscription(Image, '/camera/camera/depth/color/points', self.depth_callback, 10)
         self.target_obj_sub = self.create_subscription(String, '/target_object', self.target_callback, 10)
         self.coord_pub = self.create_publisher(String, '/object_coordinates', 10)
 
@@ -29,13 +29,13 @@ class ObjectLocalizationNode(Node):
         self.target_object = None
 
         self.panda = rtb.models.Panda()
-        self.tool_offset = SE3(np.array([
+        self.tool_offset = SE3([
             [-0.00271136, -0.99979483,  0.02007335,  0.05374745],
             [ 0.99996372, -0.00254864,  0.00812753, -0.04031328],
             [-0.0080747,   0.02009466,  0.99976547, -0.03746503],
             [ 0.0,         0.0,         0.0,         1.0]
-        ]))
-        self.fsi = FrankaStateInterface()
+        ])
+        self.fsi = FrankaStateInterface(self)
 
         self.timer = self.create_timer(0.1, self.process_image)
 
