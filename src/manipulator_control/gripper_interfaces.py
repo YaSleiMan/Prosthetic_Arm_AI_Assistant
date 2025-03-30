@@ -22,36 +22,24 @@ class TimeoutObject:
         self._timeout = timeout
 
 # copied from rclpy.spin_until_future_complete, remove spins, and add a hardcoded 0.001 sleep
-# def wait_until_future_complete(
-#     future,
-#     timeout_sec: Optional[float] = None # None will wait indefinitely
-# ) -> None:
+def wait_until_future_complete(
+    future,
+    timeout_sec: Optional[float] = None # None will wait indefinitely
+) -> None:
 
-#     if timeout_sec is None or timeout_sec < 0:
-#         while (not future.done() and not future.cancelled()):
-#             time.sleep(0.001) # 100hz
-#     else:
-#         start = time.monotonic()
-#         end = start + timeout_sec
-#         timeout_left = TimeoutObject(timeout_sec)
-#         while (not future.done() and not future.cancelled()):
-#             time.sleep(0.001) # 100hz
-#             now = time.monotonic()
-#             if now >= end:
-#                 return
-#             timeout_left.timeout = end - now
-
-def wait_until_future_complete(future, node, timeout_sec: Optional[float] = None):
     if timeout_sec is None or timeout_sec < 0:
-        while not future.done() and not future.cancelled():
-            rclpy.spin_once(node, timeout_sec=0.1)
+        while (not future.done() and not future.cancelled()):
+            time.sleep(0.001) # 100hz
     else:
         start = time.monotonic()
         end = start + timeout_sec
-        while not future.done() and not future.cancelled():
-            rclpy.spin_once(node, timeout_sec=0.1)
-            if time.monotonic() >= end:
+        timeout_left = TimeoutObject(timeout_sec)
+        while (not future.done() and not future.cancelled()):
+            time.sleep(0.001) # 100hz
+            now = time.monotonic()
+            if now >= end:
                 return
+            timeout_left.timeout = end - now
 # -------------------------------------------------------
 
 # This class assumes you have a spin thread running outside of it
@@ -65,11 +53,11 @@ class FrankaGripperActionClient():
         #     self.get_logger().info('cancel action service not available, waiting again...')        
         self.cancel_action_req = Trigger.Request()
 
-    def _action_blocking_helper(self, future, timeout=3.0):
-        wait_until_future_complete(future, self.node, timeout)
+    def _action_blocking_helper(self, future):
+        wait_until_future_complete(future)
         goal_handle = future.result()
         result_future = goal_handle.get_result_async()
-        wait_until_future_complete(result_future, self.node, timeout)
+        wait_until_future_complete(result_future)
         return result_future.result()
 
     def do_homing_async(self):

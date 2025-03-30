@@ -4,6 +4,7 @@ import ast
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+import time
 
 from franka_motion_commander import FrankaMotionCommander
 
@@ -11,7 +12,7 @@ class FunctionDispatcher(Node):
     def __init__(self):
         super().__init__('function_dispatcher')
         self.commander = FrankaMotionCommander(node=self)
-        self.object_lookup_pub = self.create_publisher(String, "/target_object", 10)
+        # self.object_lookup_pub = self.create_publisher(String, "/target_object", 10)
         self.subscription = self.create_subscription(String, "/extracted_functions", self.callback, 10)
         self.get_logger().info("Function dispatcher ready.")
 
@@ -37,20 +38,13 @@ class FunctionDispatcher(Node):
                     return val.s
             raise ValueError("Expected a single string literal")
         except Exception as e:
-            self.get_logger().error(f"Failed to parse single string argument: {arg_str} — {e}")
+            self.node.get_logger().error(f"Failed to parse single string argument: {arg_str} — {e}")
             return None
 
     def dispatch_function_call(self, call_str):
         self.get_logger().info(f"Dispatching: {call_str}")
 
-        if call_str.startswith("find_object"):
-            args = self.parse_single_string_arg(call_str[len("find_object"):])
-            if isinstance(args, str):
-                self.object_lookup_pub.publish(String(data=args))
-            else:
-                self.get_logger().error("Invalid arguments for find_object")
-
-        elif call_str.startswith("move_to_pose"):
+        if call_str.startswith("move_to_pose"):
             args = self.parse_kwargs(call_str[len("move_to_pose"):])
             if isinstance(args, dict):
                 position = args.get("position")
@@ -60,15 +54,9 @@ class FunctionDispatcher(Node):
             else:
                 self.get_logger().error("Invalid arguments for move_to_pose")
 
-        elif call_str.startswith("set_gripper"):
-            state = self.parse_single_string_arg(call_str[len("set_gripper"):])
-            if state in ("open", "close"):
-                self.commander.set_gripper(state)
-            else:
-                self.get_logger().error("Invalid value for set_gripper. Must be 'open' or 'close'.")
-
         else:
             self.get_logger().warn(f"Unknown function: {call_str}")
+        time.sleep(2)
 
     def callback(self, msg):
         self.get_logger().info(f"Received function call string:\n{msg.data}")

@@ -42,7 +42,7 @@ class FrankaMotionCommander:
     def __init__(self, node, tool_offset=[0.0, 0.0, 0.145]):
         self.node = node
         self.fsi = FrankaStateInterface(self.node)
-        self.gripper = FrankaGripperActionClient(self.node)
+        # self.gripper = FrankaGripperActionClient(self.node)
 
         self.panda = rtb.models.Panda()
         self.panda.tool = SE3()  # Define any actual tool offset here if different
@@ -82,9 +82,9 @@ class FrankaMotionCommander:
 
         elif mode == "object":
             position = get_object_coordinates(self.node)
-            if position is None:
+            while position is None:
                 self.node.get_logger().error("Timeout waiting for object coordinates")
-                return
+                time.sleep(1)
             target_pose = SE3(*position) * SE3.RPY(rpy, order='xyz')
 
         else:
@@ -108,21 +108,6 @@ class FrankaMotionCommander:
                 time.sleep(sleep_time)
             else:
                 self.node.get_logger().warn("IK solution failed at one of the trajectory steps.")
-
-    def set_gripper(self, state):
-        """
-        Opens or closes the gripper.
-        state: "open" or "close"
-        """
-        if state == "open":
-            self.node.get_logger().info("Opening gripper")
-            self.gripper.do_move_blocking(width=0.06, speed=0.2)
-        elif state == "close":
-            self.node.get_logger().info("Closing gripper")
-            self.gripper.do_grasp_blocking(width=0.01, speed=0.2)
-        else:
-            self.node.get_logger().error(f"Invalid gripper command: {state}")
-        time.sleep(0.1)
     
     def shutdown(self):
         rclpy.shutdown()
@@ -146,8 +131,8 @@ if __name__ == '__main__':
     # commander.move_to_pose(rpy=(0, 3.14, 0), mode="object")
 
     # Example gripper command
-    commander.set_gripper("close")
-    time.sleep(1)
-    commander.set_gripper("open")
+    # commander.set_gripper("close")
+    # time.sleep(1)
+    # commander.set_gripper("open")
 
     commander.shutdown()
