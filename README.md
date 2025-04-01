@@ -6,4 +6,5 @@ Planned Features:
 - Franka Emika robot as proxy for arm prosthetic
 
 Progress:
-- Implementing the LLM section of the system that takes in requests for what the arm needs to do via keyboard input and returns a list of functions needed to perform it
+- (DONE) Implementing the LLM section of the system that takes in requests for what the arm needs to do via keyboard input and returns a list of functions needed to perform it
+- Implementing the functions to control the arm
